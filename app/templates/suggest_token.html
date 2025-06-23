@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Авторизация…</title>
+    <!-- Script that parses the access_token fragment and sends it to the opener -->
+    <script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js"></script>
+</head>
+<body>
+    <script>
+        // Determine the origin of the page that opened this helper window / iframe.
+        // In most cases this will be the same origin as the main app.
+        const origin = document.referrer ? new URL(document.referrer).origin : window.location.origin;
+        try {
+            YaSendSuggestToken(origin);
+        } catch (e) {
+            console.error('YaSendSuggestToken failed', e);
+        }
+    </script>
+</body>
+</html> 

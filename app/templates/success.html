@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчёт отправлен</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+<div class="container mx-auto px-4 py-12">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold text-green-700 mb-4">✅ Отчёт успешно отправлен!</h1>
+        <p class="text-lg mb-4">Ваши данные сохранены, и задача была обновлена в Яндекс.Трекере.</p>
+
+        <div class="bg-green-100 text-green-800 p-4 rounded mb-6">
+            <p class="font-semibold">Номер задачи: <span class="font-mono">{{ issue_key }}</span></p>
+        </div>
+
+        <a href="https://tracker.yandex.ru/{{ issue_key }}"
+           class="inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">
+            Перейти к задаче в Трекере
+        </a>
+
+        <div class="mt-6">
+            <a href="/dashboard/{{ username }}" class="text-blue-500 hover:underline">Вернуться в личный кабинет</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

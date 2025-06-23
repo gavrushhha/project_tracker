@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Личный кабинет</title>
+    <style>
+        body { background-color: #a3e4d7; font-family: sans-serif; text-align: center; padding: 50px; }
+        .container { background: #ecfdf5; padding: 30px; border-radius: 20px; display: inline-block; }
+        input, textarea { padding: 10px; margin: 10px 0; width: 300px; border-radius: 10px; border: none; }
+        button { padding: 10px 20px; background-color: #7de0d4; border: none; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Личный кабинет</h2>
+    <div class="container">
+        <form action="/submit" method="post">
+            <input type="number" name="programs_supported" placeholder="Количество поддержанных программ"><br>
+            <input type="number" name="projects_in_program" placeholder="Количество научно-образовательных проектов"><br>
+            <input type="number" name="new_scientists_employed" placeholder="Количество новых научных работников"><br>
+            <input type="hidden" name="username" value="{{ username }}">
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+</body>
+</html>

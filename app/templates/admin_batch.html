@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание задач</title>
+    <!-- Tailwind CSS for общая стилистика -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body x-data="batch()" class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<div class="max-w-4xl w-full mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-indigo-800 text-center">🛠️ Создание задач</h1>
+
+    <!-- Форма параметров -->
+    <div class="space-y-6">
+        <!-- Summary -->
+        <div>
+            <label class="block mb-1 font-medium">Общее название задачи</label>
+            <input type="text" x-model="summary" placeholder="Введите краткое название"
+                   class="border border-gray-300 p-2 rounded shadow-sm w-full">
+        </div>
+
+        <!-- Queue -->
+        <div>
+            <label class="block mb-1 font-medium">Очередь</label>
+            <select x-model="queue" @change="loadUsers" class="border border-gray-300 p-2 rounded shadow-sm w-full max-w-xs">
+                <option value="" disabled selected>— выберите очередь —</option>
+                <template x-for="q in queues" :key="q.key">
+                    <option x-text="q.key" :value="q.key"></option>
+                </template>
+            </select>
+        </div>
+
+        <!-- Form type -->
+        <div>
+            <span class="block mb-1 font-medium">Тип формы</span>
+            <label class="inline-flex items-center mr-4">
+                <input type="radio" class="form-radio" value="basic" x-model="form_type">
+                <span class="ml-2">Обычная</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input type="radio" class="form-radio" value="extended" x-model="form_type">
+                <span class="ml-2">Расширенная</span>
+            </label>
+        </div>
+
+        <!-- Users selection -->
+        <div>
+            <span class="block mb-1 font-medium">Выберите исполнителей</span>
+            <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-60 overflow-y-auto border p-3 rounded bg-white shadow">
+                <template x-for="u in users" :key="u.login">
+                    <label class="inline-flex items-center space-x-2">
+                        <input type="checkbox" :value="u.login" x-model="selected">
+                        <span x-text="u.display"></span>
+                    </label>
+                </template>
+            </div>
+        </div>
+
+        <button class="bg-green-600 text-white px-6 py-3 rounded shadow hover:bg-green-700 transition"
+                @click="submit">Создать задачи</button>
+    </div>
+</div>
+
+<script>
+function batch(){
+    return {
+        summary:'',
+        queue:'',
+        form_type:'basic',
+        queues:[],
+        users:[],
+        selected:[],
+        async init(){
+            this.queues = await (await fetch('/tracker/queues')).json();
+        },
+        async loadUsers(){
+            this.selected = [];
+            if(!this.queue){this.users=[]; return;}
+            try{
+                this.users = await (await fetch(`/tracker/queues/${this.queue}/users`)).json();
+            }catch(e){console.error(e); this.users=[];}
+        },
+        async submit(){
+            if(!this.summary){alert('Введите название задачи'); return;}
+            if(!this.queue){alert('Выберите очередь'); return;}
+            if(this.selected.length === 0){alert('Выберите хотя бы одного исполнителя'); return;}
+
+            const tasks = this.selected.map(login => ({queue:this.queue, assignee:login}));
+            const body = {summary:this.summary, form_type:this.form_type, tasks};
+            const r = await fetch('/admin/batch/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+            if(r.ok){alert('Задачи созданы'); location.href='/admin';}
+            else {alert('Ошибка: '+(await r.text()));}
+        }
+    }
+}
+</script>
+</body>
+</html> 

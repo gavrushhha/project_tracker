@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет - {{ username }} (расширенный)</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Добро пожаловать, {{ username }}!</h1>
+
+    <!-- Расширенный отчёт -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">Квартальный отчёт (расширенный)</h2>
+
+        {% if issue_not_found %}
+            <div class="text-yellow-600 font-semibold mb-4">
+                У вас нет активных задач. Пожалуйста, обратитесь к администратору.
+            </div>
+        {% elif issue_in_progress %}
+            <div class="text-red-600 font-semibold mb-4">
+                Данные для отчёта уже отправлены. Ваша задача в статусе "В работе" —
+                <a href="https://tracker.yandex.ru/{{ issue_key }}" target="_blank" class="text-blue-600 underline">
+                    перейти к задаче {{ issue_key }}
+                </a>.
+            </div>
+            <button type="submit" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Отправить</button>
+        {% else %}
+        <form action="/submit" method="post" enctype="multipart/form-data" class="space-y-4">
+            <input type="hidden" name="username" value="{{ username }}">
+            <input type="hidden" name="department" value="science">
+
+            <div>
+                <label class="block mb-1 font-medium">Поддержано программ:</label>
+                <input type="number" name="programs_supported" required class="w-full border p-2 rounded">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Проектов в программах:</label>
+                <input type="number" name="projects_in_program" required class="w-full border p-2 rounded">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Новых учёных:</label>
+                <input type="number" name="new_scientists_employed" required class="w-full border p-2 rounded">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Описание проделанной работы:</label>
+                <textarea name="description" rows="4" class="w-full border p-2 rounded" placeholder="Кратко опишите основные достижения"></textarea>
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Прикрепить файл:</label>
+                <input type="file" name="report_file" accept=".pdf,.doc,.docx,.xlsx,.png,.jpg,.zip" class="w-full border p-2 rounded">
+            </div>
+
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Отправить отчёт</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html> 

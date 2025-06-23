@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои задачи</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <h1>Задачи пользователя {{ username }}</h1>
+
+    {% if issues|length == 0 %}
+        <p>Активных задач нет.</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Ключ</th>
+                    <th>Название</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for issue in issues %}
+                <tr>
+                    <td><a href="https://tracker.yandex.ru/{{ issue.key }}" target="_blank">{{ issue.key }}</a></td>
+                    <td>{{ issue.summary }}</td>
+                    <td>{{ issue.status.display }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="/dashboard/{{ username }}">Вернуться на дашборд</a></p>
+</body>
+</html> 

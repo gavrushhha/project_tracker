@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8 text-center text-indigo-800">📋 Отчёты пользователей</h1>
+
+    <!-- Панель управления -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+        <!-- Фильтр по дате -->
+        <form method="get" action="/admin" class="flex items-center gap-2 flex-wrap">
+            <input id="date-range" type="text" placeholder="Диапазон дат"
+                   class="border border-gray-300 px-4 py-2 rounded shadow-sm" readonly>
+            <input type="hidden" name="from" id="from-date">
+            <input type="hidden" name="to" id="to-date">
+            <button type="submit"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">
+                🔍 Фильтр
+            </button>
+            {% if from or to %}
+                <a href="/admin" class="text-sm text-gray-600 underline ml-1">Сбросить</a>
+            {% endif %}
+        </form>
+
+        <!-- Кнопки экспорта -->
+        <div class="flex gap-2 justify-center">
+            <a href="/admin/export/excel{% if from or to %}?{% if from %}from={{ from }}{% endif %}{% if from and to %}&{% endif %}{% if to %}to={{ to }}{% endif %}{% endif %}"
+               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full text-center">
+                📊 Excel
+            </a>
+            <a href="/admin/export/word{% if from or to %}?{% if from %}from={{ from }}{% endif %}{% if from and to %}&{% endif %}{% if to %}to={{ to }}{% endif %}{% endif %}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full text-center">
+                📄 Word
+            </a>
+        </div>
+
+        <!-- Переход к мастеру создания задач -->
+        <div class="flex justify-end">
+            <a href="/admin/batch"
+               class="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700 transition">
+                🛠️ Создать задачи
+            </a>
+        </div>
+    </div>
+
+    <!-- Таблица отчетов -->
+    <div class="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
+        <table class="w-full table-auto text-sm border-collapse">
+            <thead class="bg-gray-100 sticky top-0 z-10">
+            <tr>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">👤 Пользователь</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">📘 Поддержанные программы</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">🎓 Образовательные проекты</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">👥 Новые сотрудники</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">📅 Дата</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700">📎 Файл</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            {% for report in reports %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium">{{ report.username }}</td>
+                    <td class="px-4 py-3">{{ report.programs_supported }}</td>
+                    <td class="px-4 py-3">{{ report.projects_in_program }}</td>
+                    <td class="px-4 py-3">{{ report.new_scientists_employed }}</td>
+                    <td class="px-4 py-3">{{ report.created_at }}</td>
+                    <td class="px-4 py-3 text-blue-600">
+                        {% if report.attachment_id %}
+                            <a href="/attachments/{{ report.issue_key }}/{{ report.attachment_id }}/{{ report.attachment_name }}" class="underline hover:text-blue-800" target="_blank">Скачать</a>
+                        {% elif report.file_path %}
+                            {% set filename = report.file_path.split('/')[-1] %}
+                            <a href="/uploaded_files/{{ filename }}" class="underline hover:text-blue-800" target="_blank">Скачать</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Кнопка назад -->
+    <div class="text-center mt-6">
+        <a href="/" class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition">
+            ← На главную
+        </a>
+    </div>
+</div>
+
+<script>
+    /* иконки */
+    window.lucide?.createIcons();
+
+    // flatpickr range picker
+    document.addEventListener('DOMContentLoaded', () => {
+        const fp = flatpickr('#date-range', {
+            mode: 'range',
+            dateFormat: 'Y-m-d',
+            locale: 'ru',
+            defaultDate: [{{ '"' + from + '"' if from else '' }}, {{ '"' + to + '"' if to else '' }}].filter(Boolean),
+            onClose: function(selectedDates, dateStr, instance) {
+                const fromInput = document.getElementById('from-date');
+                const toInput = document.getElementById('to-date');
+                if (selectedDates.length === 2) {
+                    fromInput.value = instance.formatDate(selectedDates[0], 'Y-m-d');
+                    toInput.value = instance.formatDate(selectedDates[1], 'Y-m-d');
+                } else {
+                    fromInput.value = '';
+                    toInput.value = '';
+                }
+            }
+        });
+    });
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</body>
+</html>

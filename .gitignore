@@ -1,0 +1,99 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Type checking & linting caches
+.mypy_cache/
+ruff_cache/
+
+# Profiling
+*.prof
+
+# Logs
+*.log
+logs/
+
+# IDEs & editors
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Env files
+.env
+*.env
+
+# Uploaded / generated user content
+uploaded_files/
+app/uploaded_files/
+
+# Static assets built locally
+static/
+
+# Node modules (if Tailwind or other JS tooling is used)
+node_modules/
+
+# Yarn Zero-Installs
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# Docker
+**/__docker_cache__/
+
+# Docker compose overrides
+docker-compose.override.yml
+
+# Documentation build artifacts
+/docs/_build/
