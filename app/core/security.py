@@ -46,7 +46,7 @@ async def get_current_user(
     expected_admin = login in settings.ADMIN_LOGINS.split(",") if settings.ADMIN_LOGINS else False
     if bool(user.is_admin) != expected_admin:
         setattr(user, "is_admin", expected_admin)
-        db.commit()
+    db.commit()
 
     return user
 
