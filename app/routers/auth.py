@@ -109,7 +109,9 @@ async def auth_code_callback(
         db.add(Report(username=username))
     db.commit()
 
-    redirect = RedirectResponse(url=f"/dashboard/{username}")
+    # Redirect admins to admin dashboard immediately
+    target_url = "/admin" if bool(user.is_admin) else f"/dashboard/{username}"
+    redirect = RedirectResponse(url=target_url)
     # Создаём подписанную сессию
     issue_session_cookie(redirect, username)
     # Удаляем временный oauth_state cookie
@@ -147,7 +149,9 @@ async def token_login(payload: TokenLogin, db: Session = Depends(get_db)):
         user = User(login=username, is_admin=username in settings.ADMIN_LOGINS.split(","))
         db.add(user)
         db.commit()
-    response = RedirectResponse(url="/dashboard/" + username, status_code=303)
+    # Redirect admins to admin dashboard immediately
+    target_url = "/admin" if bool(user.is_admin) else "/dashboard/" + username
+    response = RedirectResponse(url=target_url, status_code=303)
     issue_session_cookie(response, username)
     return response
 

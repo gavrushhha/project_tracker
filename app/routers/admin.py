@@ -239,7 +239,7 @@ def export_excel(
 
 @router.get("/admin/users")
 async def list_users(db: Session = Depends(get_db), _ = Depends(admin_required)):
-    return [u.login for u in db.query(User).all()]
+    return [u.login for u in db.query(User).all()] 
 
 
 @router.get("/tracker/queues/{queue_key}/users")

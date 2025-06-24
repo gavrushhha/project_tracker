@@ -14,7 +14,7 @@ async def download_file(filename: str):
     file_path = os.path.join("uploaded_files", filename)
     if os.path.exists(file_path):
         return FileResponse(file_path, media_type="application/octet-stream", filename=filename)
-    raise HTTPException(status_code=404, detail="Файл не найден")
+    raise HTTPException(status_code=404, detail="Файл не найден") 
 
 
 # --- Proxy download from Yandex Tracker ---

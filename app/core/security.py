@@ -46,7 +46,7 @@ async def get_current_user(
     expected_admin = login in settings.ADMIN_LOGINS.split(",") if settings.ADMIN_LOGINS else False
     if bool(user.is_admin) != expected_admin:
         setattr(user, "is_admin", expected_admin)
-    db.commit()
+        db.commit()
 
     return user
 
@@ -54,7 +54,7 @@ async def get_current_user(
 def admin_required(current_user: User = Depends(get_current_user)) -> User:
     if not bool(current_user.is_admin):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin only")
-    return current_user
+    return current_user 
 
 
 # Helper exposed for auth router
