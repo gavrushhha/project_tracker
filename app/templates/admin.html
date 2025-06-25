@@ -70,11 +70,11 @@
                     <td class="px-4 py-3">{{ report.new_scientists_employed }}</td>
                     <td class="px-4 py-3">{{ report.created_at }}</td>
                     <td class="px-4 py-3 text-blue-600">
-                        {% if report.attachment_id %}
-                            <a href="/attachments/{{ report.issue_key }}/{{ report.attachment_id }}/{{ report.attachment_name }}" class="underline hover:text-blue-800" target="_blank">Скачать</a>
+                        {% if report.issue_key %}
+                            <a href="/attachments/{{ report.issue_key }}/all.zip" class="underline hover:text-blue-800" target="_blank">Скачать все</a>
                         {% elif report.file_path %}
                             {% set filename = report.file_path.split('/')[-1] %}
-                            <a href="/uploaded_files/{{ filename }}" class="underline hover:text-blue-800" target="_blank">Скачать</a>
+                            <a href="/uploaded_files/{{ filename }}" class="underline hover:text-blue-800" target="_blank">Скачать файл</a>
                         {% else %}
                             —
                         {% endif %}

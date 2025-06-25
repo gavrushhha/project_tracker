@@ -39,12 +39,8 @@ async def create_batch_tasks(data: BatchTasksSchema, db: Session = Depends(get_d
     }
     created: list[str] = []
     for item in data.tasks:
-        # Генерируем ссылку для формы, зависящую от типа
-        if data.form_type == "basic":
-            link = f"http://localhost:8000/dashboard/{item.assignee}"
-        else:
-            # extended форма — добавляем параметр для версии формы
-            link = f"http://localhost:8000/dashboard/{item.assignee}?extended=1"
+        # Всегда используем расширенную форму – ссылка без дополнительных параметров
+        link = f"https://report.siriusuniversity.ru/dashboard/{item.assignee}"
 
         payload = {
             "queue": item.queue,
@@ -59,6 +55,19 @@ async def create_batch_tasks(data: BatchTasksSchema, db: Session = Depends(get_d
             issue_json = resp.json()
             issue_key = issue_json["key"]
             created.append(issue_key)
+
+
+            # Переводим задачу в статус «В работу», если такой переход доступен
+            transitions_url = f"https://api.tracker.yandex.net/v3/issues/{issue_key}/transitions"
+            trans_resp = requests.get(transitions_url, headers=headers)
+            if trans_resp.status_code == 200:
+                transitions = trans_resp.json()
+                transition = next((t for t in transitions if t.get("display", "").lower() == "в работу"), None)
+                if transition:
+                    exec_url = (
+                        f"https://api.tracker.yandex.net/v3/issues/{issue_key}/transitions/{transition['id']}/_execute"
+                    )
+                    requests.post(exec_url, headers=headers, json={"comment": "Статус установлен автоматически"})
 
             # Сохраняем в БД для дашборда
             db_task = Task(

@@ -7,15 +7,49 @@
     <script src="https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js"></script>
 </head>
 <body>
-    <script>
-        // Determine the origin of the page that opened this helper window / iframe.
-        // In most cases this will be the same origin as the main app.
-        const origin = document.referrer ? new URL(document.referrer).origin : window.location.origin;
-        try {
-            YaSendSuggestToken(origin);
-        } catch (e) {
-            console.error('YaSendSuggestToken failed', e);
-        }
+     <script>
+        (function () {
+            // Always use our own origin — it must be identical to the tokenPageOrigin
+            // that was passed to YaAuthSuggest.init on the login page.
+            const origin = window.location.origin;
+
+            try {
+                // Основной сценарий — используем вспомогательную функцию из CDN Яндекса
+                YaSendSuggestToken(origin);
+            } catch (err) {
+                // Если библиотека не загрузилась или вызов не удался (например, из-за VPN),
+                // выполняем резервную логику: разбираем access_token из hash и
+                // отправляем его прямо на backend.
+                console.warn('YaSendSuggestToken failed, applying fallback', err);
+
+                const params = new URLSearchParams(window.location.hash.substring(1));
+                const access_token = params.get('access_token');
+
+                if (!access_token) {
+                    document.body.textContent = 'Не удалось получить access_token';
+                    return;
+                }
+
+                fetch('/auth/token-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ access_token })
+                })
+                    .then((r) => {
+                        if (r.redirected) {
+                            window.location.href = r.url;
+                        } else {
+                            return r.json().then((e) => {
+                                throw new Error(e.detail ?? 'Ошибка авторизации');
+                            });
+                        }
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        document.body.textContent = e.message;
+                    });
+            }
+        })();
     </script>
 </body>
 </html> 

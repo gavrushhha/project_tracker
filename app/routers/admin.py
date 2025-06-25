@@ -48,6 +48,9 @@ async def admin_page(
         except ValueError:
             pass
 
+    # Сортируем по дате создания (самые новые сверху)
+    query = query.order_by(Report.created_at.desc())
+
     reports = query.all()
     return templates.TemplateResponse(
         "admin.html",
@@ -126,7 +129,21 @@ async def create_tasks_in_tracker(
         }
         resp = requests.post("https://api.tracker.yandex.net/v3/issues/", headers=headers, json=issue_payload)
         if resp.status_code == 201:
-            created_issues.append(resp.json()["key"])
+            created_issue = resp.json()
+            issue_key = created_issue["key"]
+            created_issues.append(issue_key)
+
+            # Move issue to "В работу" status if transition available
+            transitions_url = f"https://api.tracker.yandex.net/v3/issues/{issue_key}/transitions"
+            trans_resp = requests.get(transitions_url, headers=headers)
+            if trans_resp.status_code == 200:
+                transitions = trans_resp.json()
+                transition = next((t for t in transitions if t["display"].lower() == "в работу"), None)
+                if transition:
+                    exec_url = (
+                        f"https://api.tracker.yandex.net/v3/issues/{issue_key}/transitions/{transition['id']}/_execute"
+                    )
+                    requests.post(exec_url, headers=headers, json={"comment": "Статус установлен автоматически"})
         else:
             logger.error("Ошибка создания задачи: %s", resp.text)
 

@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # OAuth
     CLIENT_ID: str | None = None
     CLIENT_SECRET: str | None = None
-    REDIRECT_URI: str | None = "http://localhost:8000/auth/callback"
+    REDIRECT_URI: str | None = "https://report.siriusuniversity.ru/auth/callback"
     YANDEX_AUTH_URL: str = "https://oauth.yandex.ru/authorize"
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     # Application
     ADMIN_LOGINS: str = "yakovleva.sv"  # comma-separated list of admin logins
+    REVIEWER_LOGINS: str = "yakovleva.sv"  # comma-separated list of reviewer logins
     SECRET_KEY: str = "change-me"  # used to sign session cookies
 
     class Config:

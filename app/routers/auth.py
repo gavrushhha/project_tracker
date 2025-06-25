@@ -21,6 +21,7 @@ async def login_page(request: Request):
 
     # Build the redirect URI for the auxiliary page that receives the OAuth token.
     token_redirect_uri = request.url_for("suggest_token")
+    token_redirect_uri = str(token_redirect_uri).replace("http://", "https://")
 
     return templates.TemplateResponse(
         "login.html",
