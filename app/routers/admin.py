@@ -122,7 +122,7 @@ async def create_tasks_in_tracker(
         issue_payload = {
             "queue": queue,
             "summary": text,
-            "description": f"Задача: {text}\n\nПройдите опрос: http://localhost:8000/dashboard/{assignee}",
+            "description": f"Задача: {text}\n\nПройдите опрос: https://report.siriusuniversity.ru/dashboard/{assignee}",
             "type": "task",
             "priority": {"id": "3"},
             "assignee": assignee,
